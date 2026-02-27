@@ -3,9 +3,11 @@ package com.suguiura.user.business;
 import com.suguiura.user.business.converter.UserConverter;
 import com.suguiura.user.business.dto.UserDTO;
 import com.suguiura.user.infrastructure.entity.UserEntity;
+import com.suguiura.user.infrastructure.exceptions.ConflictException;
+import com.suguiura.user.infrastructure.exceptions.ResourceNotFoundException;
 import com.suguiura.user.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +16,37 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserConverter userConverter;
+    private final PasswordEncoder passwordEncoder;
 
     public UserDTO saveUser(UserDTO userDTO){
+        emailExists(userDTO.getEmail());
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         UserEntity user = userConverter.toUser(userDTO);
         user = userRepository.save(user);
         return userConverter.toUserDTO(user);
+    }
+
+    public void emailExists(String email){
+        try{
+            boolean exist = verifyEmailExists(email);
+            if (exist){
+                throw new ConflictException("Email já cadastrado " + email);
+            }
+        } catch (ConflictException e){
+            throw new ConflictException("Email já cadastrado " + e.getCause());
+        }
+    }
+
+    public boolean verifyEmailExists(String email){
+        return userRepository.existsByEmail(email);
+    }
+
+    public UserEntity findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("Email não encontrado" + email)); // o orElseThrow evita que o programa quebre por null pointer exception
+    }
+
+    public void deleteUserByEmail(String email) {
+        userRepository.deleteByEmail(email);
     }
 }
