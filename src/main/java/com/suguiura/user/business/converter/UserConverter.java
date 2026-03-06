@@ -65,14 +65,15 @@ public class UserConverter {
         return addressDTOS.stream().map(this::toAddressDTO).toList();
     }
 
-    public AddressDTO toAddressDTO(Address addressDTO){
+    public AddressDTO toAddressDTO(Address address){
         return  AddressDTO.builder()
-                .street(addressDTO.getStreet())
-                .number(addressDTO.getNumber())
-                .complement(addressDTO.getComplement())
-                .city(addressDTO.getCity())
-                .state(addressDTO.getState())
-                .zipCode(addressDTO.getZipCode())
+                .id(address.getId())
+                .street(address.getStreet())
+                .number(address.getNumber())
+                .complement(address.getComplement())
+                .city(address.getCity())
+                .state(address.getState())
+                .zipCode(address.getZipCode())
                 .build();
     }
 
@@ -80,9 +81,10 @@ public class UserConverter {
         return phoneNumberDTOS.stream().map(this::toPhoneNumberDTO).toList();
     }
 
-    public PhoneNumberDTO toPhoneNumberDTO(PhoneNumber phoneNumberDTO){
+    public PhoneNumberDTO toPhoneNumberDTO(PhoneNumber phoneNumber){
         return PhoneNumberDTO.builder()
-                .number(phoneNumberDTO.getNumber())
+                .id(phoneNumber.getId())
+                .number(phoneNumber.getNumber())
                 .build();
     }
 
@@ -94,6 +96,25 @@ public class UserConverter {
                 .email(userDTO.getEmail() != null ? userDTO.getEmail() : userEntity.getEmail())
                 .address(userEntity.getAddress())
                 .phoneNumbers(userEntity.getPhoneNumbers())
+                .build();
+    }
+
+    public Address updateAddress(AddressDTO dto, Address entity){
+        return Address.builder()
+                .id(entity.getId())
+                .street(dto.getStreet() != null ? dto.getStreet() : entity.getStreet())
+                .number(dto.getNumber() != null ? dto.getNumber() : entity.getNumber())
+                .complement(dto.getComplement() != null ? dto.getComplement() : entity.getComplement())
+                .city(dto.getCity() != null ? dto.getCity() : entity.getCity())
+                .state(dto.getState() != null ? dto.getState() : entity.getState())
+                .zipCode(dto.getZipCode() != null ? dto.getZipCode() : entity.getZipCode())
+                .build();
+    }
+
+    public PhoneNumber updatePhoneNumber(PhoneNumberDTO dto, PhoneNumber entity){
+        return PhoneNumber.builder()
+                .id(entity.getId())
+                .number(dto.getNumber() != null ? dto.getNumber() : entity.getNumber())
                 .build();
     }
 }

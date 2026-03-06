@@ -1,10 +1,16 @@
 package com.suguiura.user.business;
 
 import com.suguiura.user.business.converter.UserConverter;
+import com.suguiura.user.business.dto.AddressDTO;
+import com.suguiura.user.business.dto.PhoneNumberDTO;
 import com.suguiura.user.business.dto.UserDTO;
+import com.suguiura.user.infrastructure.entity.Address;
+import com.suguiura.user.infrastructure.entity.PhoneNumber;
 import com.suguiura.user.infrastructure.entity.UserEntity;
 import com.suguiura.user.infrastructure.exceptions.ConflictException;
 import com.suguiura.user.infrastructure.exceptions.ResourceNotFoundException;
+import com.suguiura.user.infrastructure.repository.AddressRepository;
+import com.suguiura.user.infrastructure.repository.PhoneNumberRepository;
 import com.suguiura.user.infrastructure.repository.UserRepository;
 import com.suguiura.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,8 @@ public class UserService {
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final AddressRepository addressRepository;
+    private final PhoneNumberRepository phoneNumberRepository;
 
     public UserDTO saveUser(UserDTO userDTO){
         emailExists(userDTO.getEmail());
@@ -43,9 +51,13 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public UserEntity findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException("Email não encontrado" + email)); // o orElseThrow evita que o programa quebre por null pointer exception
+    public UserDTO findUserByEmail(String email) {
+        try {
+            return userConverter.toUserDTO(userRepository.findByEmail(email).orElseThrow(
+                    () -> new ResourceNotFoundException("Email não encontrado" + email))); // o orElseThrow evita que o programa quebre por null pointer exception
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Email não encontrado " + email);
+        }
     }
 
     public void deleteUserByEmail(String email) {
@@ -64,5 +76,19 @@ public class UserService {
         UserEntity userEntity1 = userConverter.updateUser(dto, userEntity);
         //Salva os dados do usuário convertido e depois retornou esses dados convertidos para DTO
         return userConverter.toUserDTO(userRepository.save(userEntity1));
+    }
+
+    public AddressDTO updateAddress(Long id, AddressDTO addressDTO){
+        Address entity = addressRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Id não encontrado " + id));
+        Address address = userConverter.updateAddress(addressDTO, entity);
+        return  userConverter.toAddressDTO(addressRepository.save(address));
+    }
+
+    public PhoneNumberDTO updatePhoneNumber(Long id, PhoneNumberDTO dto){
+        PhoneNumber entity = phoneNumberRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Id não encontrado " + id));
+        PhoneNumber phoneNumber = userConverter.updatePhoneNumber(dto, entity);
+        return userConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
 }

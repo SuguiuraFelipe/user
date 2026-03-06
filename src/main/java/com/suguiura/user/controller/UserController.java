@@ -2,6 +2,8 @@ package com.suguiura.user.controller;
 
 
 import com.suguiura.user.business.UserService;
+import com.suguiura.user.business.dto.AddressDTO;
+import com.suguiura.user.business.dto.PhoneNumberDTO;
 import com.suguiura.user.business.dto.UserDTO;
 import com.suguiura.user.infrastructure.entity.UserEntity;
 import com.suguiura.user.infrastructure.security.JwtUtil;
@@ -34,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserEntity> findUserByEmail(@RequestParam("email") String email){ //Requisição via parametro
+    public ResponseEntity<UserDTO> findUserByEmail(@RequestParam("email") String email){ //Requisição via parametro
         return ResponseEntity.ok(userService.findUserByEmail(email)); // ResponseEntity.ok serve para formatar a resposta de maneira correta para o response HTTP
     }
 
@@ -47,5 +49,15 @@ public class UserController {
     @PutMapping
     public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO dto, @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(userService.updateUserData(token, dto));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO dto, @RequestParam("id") Long id){
+        return ResponseEntity.ok(userService.updateAddress(id, dto));
+    }
+
+    @PutMapping("/phone")
+    public ResponseEntity<PhoneNumberDTO> updateAddress(@RequestBody PhoneNumberDTO dto, @RequestParam("id") Long id){
+        return ResponseEntity.ok(userService.updatePhoneNumber(id, dto));
     }
 }
