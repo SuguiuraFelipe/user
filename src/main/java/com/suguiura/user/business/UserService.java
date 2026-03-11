@@ -91,4 +91,22 @@ public class UserService {
         PhoneNumber phoneNumber = userConverter.updatePhoneNumber(dto, entity);
         return userConverter.toPhoneNumberDTO(phoneNumberRepository.save(phoneNumber));
     }
+
+    public AddressDTO registerAddress(String token, AddressDTO dto){
+        String email = jwtUtil.extractUsername(token.substring(7));
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email não encontrado " + email));
+        Address address = userConverter.toAddressEntity(dto, user.getId());
+        Address addressEntity = addressRepository.save(address);
+        return userConverter.toAddressDTO(addressEntity);
+    }
+
+    public PhoneNumberDTO registerPhoneNumber(String token, PhoneNumberDTO dto){
+        String email = jwtUtil.extractUsername(token.substring(7));
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email não encontrado " + email));
+        PhoneNumber phoneNumber = userConverter.toPhoneNumberEntity(dto, user.getId());
+        PhoneNumber phoneNumberEntity = phoneNumberRepository.save(phoneNumber);
+        return userConverter.toPhoneNumberDTO(phoneNumberEntity);
+    }
 }
