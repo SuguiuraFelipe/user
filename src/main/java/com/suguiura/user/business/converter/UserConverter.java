@@ -117,4 +117,23 @@ public class UserConverter {
                 .number(dto.getNumber() != null ? dto.getNumber() : entity.getNumber())
                 .build();
     }
+
+    public Address toAddressEntity(AddressDTO dto, Long idUser){
+        return Address.builder()
+                .street(dto.getStreet())
+                .number(dto.getNumber())
+                .complement(dto.getComplement())
+                .city(dto.getCity())
+                .state(dto.getState())
+                .zipCode(dto.getZipCode())
+                .user_id(idUser)
+                .build();
+    }
+
+    public PhoneNumber toPhoneNumberEntity(PhoneNumberDTO dto, Long idUser){
+        return PhoneNumber.builder()
+                .number(dto.getNumber())
+                .user_id(idUser)
+                .build();
+    }
 }
