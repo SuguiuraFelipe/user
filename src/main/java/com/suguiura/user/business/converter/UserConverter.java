@@ -18,8 +18,6 @@ public class UserConverter {
                 .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
-                .address(toListAddress((userDTO.getAddress())))
-                .phoneNumbers(toListPhoneNumber((userDTO.getPhoneNumbers())))
                 .build();
     }
 
@@ -56,8 +54,6 @@ public class UserConverter {
                 .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
-                .address(toListAddressDTO((userDTO.getAddress())))
-                .phoneNumbers(toListPhoneNumberDTO((userDTO.getPhoneNumbers())))
                 .build();
     }
 
